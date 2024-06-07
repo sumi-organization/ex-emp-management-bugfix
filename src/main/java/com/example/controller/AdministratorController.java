@@ -79,11 +79,11 @@ public class AdministratorController {
     if (administratorService.isExistingAdministratorByMailAddress(form.getMailAddress())) {
       result.rejectValue("mailAddress", "500", "メールアドレスが重複しています");
     }
+    FieldError confirmPasswordFieldError = result.getFieldError("passwordValid");
+    if (confirmPasswordFieldError != null) {
+      result.rejectValue("confirmPassword", "500", confirmPasswordFieldError.getDefaultMessage());
+    }
     if (result.hasErrors()) {
-      FieldError confirmPasswordFieldError = result.getFieldError("passwordValid");
-      if (confirmPasswordFieldError != null) {
-        result.rejectValue("confirmPassword", "500", confirmPasswordFieldError.getDefaultMessage());
-      }
       return toInsert(form);
     }
     Administrator administrator = new Administrator();
