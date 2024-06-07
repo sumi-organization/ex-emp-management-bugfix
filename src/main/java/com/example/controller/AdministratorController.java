@@ -54,33 +54,33 @@ public class AdministratorController {
     return new LoginForm();
   }
 
-	/////////////////////////////////////////////////////
-	// ユースケース：管理者を登録する
-	/////////////////////////////////////////////////////
-	/**
-	 * 管理者登録画面を出力します.
-	 * 
-	 * @return 管理者登録画面
-	 */
-	@GetMapping("/toInsert")
-	public String toInsert(InsertAdministratorForm form) {
-		return "administrator/insert";
-	}
+  /////////////////////////////////////////////////////
+  // ユースケース：管理者を登録する
+  /////////////////////////////////////////////////////
+  /**
+   * 管理者登録画面を出力します.
+   * 
+   * @return 管理者登録画面
+   */
+  @GetMapping("/toInsert")
+  public String toInsert(InsertAdministratorForm form) {
+    return "administrator/insert";
+  }
 
-	/**
-	 * 管理者情報を登録します.
-	 * 
-	 * @param form 管理者情報用フォーム
-	 * @return ログイン画面へリダイレクト
-	 */
-	@PostMapping("/insert")
-	public String insert(@Validated InsertAdministratorForm form, BindingResult result) {
-		if (result.hasErrors()){
-			return toInsert(form);
-		}
-		Administrator administrator = new Administrator();
-		// フォームからドメインにプロパティ値をコピー
-		BeanUtils.copyProperties(form, administrator);
+  /**
+   * 管理者情報を登録します.
+   * 
+   * @param form 管理者情報用フォーム
+   * @return ログイン画面へリダイレクト
+   */
+  @PostMapping("/insert")
+  public String insert(@Validated InsertAdministratorForm form, BindingResult result) {
+    if (result.hasErrors()) {
+      return toInsert(form);
+    }
+    Administrator administrator = new Administrator();
+    // フォームからドメインにプロパティ値をコピー
+    BeanUtils.copyProperties(form, administrator);
     try {
       administratorService.insert(administrator);
     } catch (DuplicateKeyException e) {
@@ -88,8 +88,8 @@ public class AdministratorController {
       System.out.println(e);
       return "administrator/insert";
     }
-		return "administrator/login";
-	}
+    return "redirect:/";
+  }
 
   /////////////////////////////////////////////////////
   // ユースケース：ログインをする
@@ -107,7 +107,7 @@ public class AdministratorController {
 
   /**
    * ログインします.
-   *
+   * 
    * @param form 管理者情報用フォーム
    * @return ログイン後の従業員一覧画面
    */
@@ -118,6 +118,7 @@ public class AdministratorController {
       redirectAttributes.addFlashAttribute("errorMessage", "メールアドレスまたはパスワードが不正です。");
       return "redirect:/";
     }
+    session.setAttribute("administratorName", administrator.getName());
     return "redirect:/employee/showList";
   }
 
