@@ -2,6 +2,7 @@ package com.example.controller;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -20,39 +21,38 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  * 管理者情報を操作するコントローラー.
- * 
- * @author igamasayuki
  *
+ * @author igamasayuki
  */
 @Controller
 @RequestMapping("/")
 public class AdministratorController {
 
-	@Autowired
-	private AdministratorService administratorService;
+  @Autowired
+  private AdministratorService administratorService;
 
-	@Autowired
-	private HttpSession session;
+  @Autowired
+  private HttpSession session;
 
-	/**
-	 * 使用するフォームオブジェクトをリクエストスコープに格納する.
-	 * 
-	 * @return フォーム
-	 */
-	@ModelAttribute
-	public InsertAdministratorForm setUpInsertAdministratorForm() {
-		return new InsertAdministratorForm();
-	}
+  /**
+   * 使用するフォームオブジェクトをリクエストスコープに格納する.
+   *
+   * @return フォーム
+   */
+  @ModelAttribute
+  public InsertAdministratorForm setUpInsertAdministratorForm() {
+    return new InsertAdministratorForm();
+  }
 
-	/**
-	 * 使用するフォームオブジェクトをリクエストスコープに格納する.
-	 * 
-	 * @return フォーム
-	 */
-	@ModelAttribute
-	public LoginForm setUpLoginForm() {
-		return new LoginForm();
-	}
+  /**
+   * 使用するフォームオブジェクトをリクエストスコープに格納する.
+   *
+   * @return フォーム
+   */
+  @ModelAttribute
+  public LoginForm setUpLoginForm() {
+    return new LoginForm();
+  }
 
 	/////////////////////////////////////////////////////
 	// ユースケース：管理者を登録する
@@ -81,51 +81,59 @@ public class AdministratorController {
 		Administrator administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
 		BeanUtils.copyProperties(form, administrator);
-		administratorService.insert(administrator);
+    try {
+      administratorService.insert(administrator);
+    } catch (DuplicateKeyException e) {
+      result.rejectValue("mailAddress", "500", "メールアドレスが重複しています");
+      System.out.println(e);
+      return "administrator/insert";
+    }
 		return "administrator/login";
 	}
 
-	/////////////////////////////////////////////////////
-	// ユースケース：ログインをする
-	/////////////////////////////////////////////////////
-	/**
-	 * ログイン画面を出力します.
-	 * 
-	 * @return ログイン画面
-	 */
-	@GetMapping("/")
-	public String toLogin() {
-		return "administrator/login";
-	}
+  /////////////////////////////////////////////////////
+  // ユースケース：ログインをする
+  /////////////////////////////////////////////////////
 
-	/**
-	 * ログインします.
-	 * 
-	 * @param form 管理者情報用フォーム
-	 * @return ログイン後の従業員一覧画面
-	 */
-	@PostMapping("/login")
-	public String login(LoginForm form, RedirectAttributes redirectAttributes) {
-		Administrator administrator = administratorService.login(form.getMailAddress(), form.getPassword());
-		if (administrator == null) {
-			redirectAttributes.addFlashAttribute("errorMessage", "メールアドレスまたはパスワードが不正です。");
-			return "redirect:/";
-		}
-		return "redirect:/employee/showList";
-	}
+  /**
+   * ログイン画面を出力します.
+   *
+   * @return ログイン画面
+   */
+  @GetMapping("/")
+  public String toLogin() {
+    return "administrator/login";
+  }
 
-	/////////////////////////////////////////////////////
-	// ユースケース：ログアウトをする
-	/////////////////////////////////////////////////////
-	/**
-	 * ログアウトをします. (SpringSecurityに任せるためコメントアウトしました)
-	 * 
-	 * @return ログイン画面
-	 */
-	@GetMapping(value = "/logout")
-	public String logout() {
-		session.invalidate();
-		return "redirect:/";
-	}
+  /**
+   * ログインします.
+   *
+   * @param form 管理者情報用フォーム
+   * @return ログイン後の従業員一覧画面
+   */
+  @PostMapping("/login")
+  public String login(LoginForm form, RedirectAttributes redirectAttributes) {
+    Administrator administrator = administratorService.login(form.getMailAddress(), form.getPassword());
+    if (administrator == null) {
+      redirectAttributes.addFlashAttribute("errorMessage", "メールアドレスまたはパスワードが不正です。");
+      return "redirect:/";
+    }
+    return "redirect:/employee/showList";
+  }
+
+  /////////////////////////////////////////////////////
+  // ユースケース：ログアウトをする
+  /////////////////////////////////////////////////////
+
+  /**
+   * ログアウトをします. (SpringSecurityに任せるためコメントアウトしました)
+   *
+   * @return ログイン画面
+   */
+  @GetMapping(value = "/logout")
+  public String logout() {
+    session.invalidate();
+    return "redirect:/";
+  }
 
 }
