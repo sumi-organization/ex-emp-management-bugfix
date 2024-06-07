@@ -75,19 +75,15 @@ public class AdministratorController {
    */
   @PostMapping("/insert")
   public String insert(@Validated InsertAdministratorForm form, BindingResult result) {
+    if (administratorService.isExistingAdministratorByMailAddress(form.getMailAddress())) {
+      result.rejectValue("mailAddress", "500", "メールアドレスが重複しています");
+    }
     if (result.hasErrors()) {
       return toInsert(form);
     }
     Administrator administrator = new Administrator();
     // フォームからドメインにプロパティ値をコピー
     BeanUtils.copyProperties(form, administrator);
-    try {
-      administratorService.insert(administrator);
-    } catch (DuplicateKeyException e) {
-      result.rejectValue("mailAddress", "500", "メールアドレスが重複しています");
-      System.out.println(e);
-      return "administrator/insert";
-    }
     return "redirect:/";
   }
 
