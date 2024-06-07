@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -59,7 +60,7 @@ public class AdministratorController {
   /////////////////////////////////////////////////////
   /**
    * 管理者登録画面を出力します.
-   * 
+   *
    * @return 管理者登録画面
    */
   @GetMapping("/toInsert")
@@ -69,7 +70,7 @@ public class AdministratorController {
 
   /**
    * 管理者情報を登録します.
-   * 
+   *
    * @param form 管理者情報用フォーム
    * @return ログイン画面へリダイレクト
    */
@@ -79,6 +80,10 @@ public class AdministratorController {
       result.rejectValue("mailAddress", "500", "メールアドレスが重複しています");
     }
     if (result.hasErrors()) {
+      FieldError confirmPasswordFieldError = result.getFieldError("passwordValid");
+      if (confirmPasswordFieldError != null) {
+        result.rejectValue("confirmPassword", "500", confirmPasswordFieldError.getDefaultMessage());
+      }
       return toInsert(form);
     }
     Administrator administrator = new Administrator();
@@ -103,7 +108,7 @@ public class AdministratorController {
 
   /**
    * ログインします.
-   * 
+   *
    * @param form 管理者情報用フォーム
    * @return ログイン後の従業員一覧画面
    */
