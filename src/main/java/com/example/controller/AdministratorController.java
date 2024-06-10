@@ -89,7 +89,6 @@ public class AdministratorController {
     }
     Administrator administrator = new Administrator();
     // フォームからドメインにプロパティ値をコピー
-    form.setPassword(new BCryptPasswordEncoder().encode(form.getPassword()));
     BeanUtils.copyProperties(form, administrator);
     administratorService.insert(administrator);
     return "redirect:/";
