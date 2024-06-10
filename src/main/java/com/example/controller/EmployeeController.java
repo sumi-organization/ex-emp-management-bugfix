@@ -17,7 +17,6 @@ import com.example.service.EmployeeService;
  * 従業員情報を操作するコントローラー.
  *
  * @author igamasayuki
- *
  */
 @Controller
 @RequestMapping("/employee")
@@ -39,6 +38,7 @@ public class EmployeeController {
   /////////////////////////////////////////////////////
   // ユースケース：従業員一覧を表示する
   /////////////////////////////////////////////////////
+
   /**
    * 従業員一覧画面を出力します.
    *
@@ -50,7 +50,9 @@ public class EmployeeController {
     List<Employee> employeeList = employeeService.findByName(name);
     if (employeeList.size() == 0) {
       employeeList = employeeService.showList();
-      model.addAttribute("showListMessage", "１件もありませんでした");
+      if (name != null) {
+        model.addAttribute("showListMessage", "１件もありませんでした");
+      }
     }
     model.addAttribute("employeeList", employeeList);
     return "employee/list";
@@ -59,6 +61,7 @@ public class EmployeeController {
   /////////////////////////////////////////////////////
   // ユースケース：従業員詳細を表示する
   /////////////////////////////////////////////////////
+
   /**
    * 従業員詳細画面を出力します.
    *
@@ -76,6 +79,7 @@ public class EmployeeController {
   /////////////////////////////////////////////////////
   // ユースケース：従業員詳細を更新する
   /////////////////////////////////////////////////////
+
   /**
    * 従業員詳細(ここでは扶養人数のみ)を更新します.
    *

@@ -59,11 +59,11 @@ public class InsertAdministratorForm {
 	}
 
 	public String getConfirmPassword() {
-		return password;
+		return confirmPassword;
 	}
 
 	public void setConfirmPassword(String password) {
-		this.password = password;
+		this.confirmPassword = password;
 	}
 
 	@Override

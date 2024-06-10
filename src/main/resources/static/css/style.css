@@ -9,3 +9,16 @@
 .error-messages {
   color: #ff0000;
 }
+
+.paging {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.paging-button {
+  background-color: aliceblue;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 20px;
+}
