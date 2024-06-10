@@ -106,7 +106,7 @@
 
           <!-- ここにモックのtable要素を貼り付けます -->
 
-          <table class="table table-striped">
+          <table class="table table-striped" id="employees-table">
             <thead>
               <tr>
                 <th>従業員名</th>
@@ -137,6 +137,7 @@
             </tbody>
           </table>
 
+          <div id="paging" class="paging"></div>
           <!-- ここから下を編集する必要はありません -->
         </div>
       </div>
@@ -145,5 +146,6 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="../../static/js/bootstrap.min.js"></script>
+    <script th:src="@{/js/employee/list.js}"></script>
   </body>
 </html>
