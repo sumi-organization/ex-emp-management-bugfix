@@ -3,6 +3,7 @@ package com.example.controller;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -59,7 +60,7 @@ public class AdministratorController {
   /////////////////////////////////////////////////////
   /**
    * 管理者登録画面を出力します.
-   * 
+   *
    * @return 管理者登録画面
    */
   @GetMapping("/toInsert")
@@ -69,7 +70,7 @@ public class AdministratorController {
 
   /**
    * 管理者情報を登録します.
-   * 
+   *
    * @param form 管理者情報用フォーム
    * @return ログイン画面へリダイレクト
    */
@@ -83,7 +84,9 @@ public class AdministratorController {
     }
     Administrator administrator = new Administrator();
     // フォームからドメインにプロパティ値をコピー
+    form.setPassword(new BCryptPasswordEncoder().encode(form.getPassword()));
     BeanUtils.copyProperties(form, administrator);
+    administratorService.insert(administrator);
     return "redirect:/";
   }
 
@@ -103,7 +106,7 @@ public class AdministratorController {
 
   /**
    * ログインします.
-   * 
+   *
    * @param form 管理者情報用フォーム
    * @return ログイン後の従業員一覧画面
    */
