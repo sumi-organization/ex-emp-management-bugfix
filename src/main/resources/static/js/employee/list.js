@@ -1,5 +1,7 @@
 "use strict";
 
+// ページング
+
 const records = document.querySelectorAll("#employees-table tbody > tr");
 const NUM_PER_PAGE = 10;
 const PAGE_COUNT = Math.floor((records.length - 1) / NUM_PER_PAGE) + 1;
@@ -26,3 +28,34 @@ for (let i = 0; i < PAGE_COUNT; i++) {
   });
   pagingDom.appendChild(pagingButtonDom);
 }
+
+// オートコンプリート
+
+const employeeSearchInput = document.getElementById("employee-search-input");
+const autoCompleteSuggestionDom = document.getElementById(
+  "auto-complete-suggestion"
+);
+const autoCompleteSuggestionDomReset = () => {
+  while (autoCompleteSuggestionDom.firstChild) {
+    autoCompleteSuggestionDom.removeChild(autoCompleteSuggestionDom.firstChild);
+  }
+};
+employeeSearchInput.addEventListener("input", (v) => {
+  axios({
+    method: "get",
+    url: "http://localhost:8080/api/employee/findByName",
+    params: { name: employeeSearchInput.value },
+  }).then((v) => {
+    autoCompleteSuggestionDomReset();
+    v.data.forEach((v) => {
+      const autoCompleteSuggestionItemDom = document.createElement("div");
+      autoCompleteSuggestionItemDom.innerHTML = v.name;
+      autoCompleteSuggestionItemDom.className = "auto-complete-suggestion-item";
+      autoCompleteSuggestionItemDom.addEventListener("click", () => {
+        employeeSearchInput.value = v.name;
+        autoCompleteSuggestionDomReset();
+      });
+      autoCompleteSuggestionDom.appendChild(autoCompleteSuggestionItemDom);
+    });
+  });
+});
