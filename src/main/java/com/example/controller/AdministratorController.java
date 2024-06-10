@@ -6,6 +6,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -78,6 +79,10 @@ public class AdministratorController {
   public String insert(@Validated InsertAdministratorForm form, BindingResult result) {
     if (administratorService.isExistingAdministratorByMailAddress(form.getMailAddress())) {
       result.rejectValue("mailAddress", "500", "メールアドレスが重複しています");
+    }
+    FieldError confirmPasswordFieldError = result.getFieldError("passwordValid");
+    if (confirmPasswordFieldError != null) {
+      result.rejectValue("confirmPassword", "500", confirmPasswordFieldError.getDefaultMessage());
     }
     if (result.hasErrors()) {
       return toInsert(form);
